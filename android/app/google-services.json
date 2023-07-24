@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "project_number": "19340341476",
+    "project_id": "meetha-77275",
+    "storage_bucket": "meetha-77275.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19340341476:android:c5cb559c6845756edf3cf1",
+        "android_client_info": {
+          "package_name": "com.example.flutter_login"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "19340341476-djpocif571bqp1a2u0sq5f0fgntjgoig.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC37c7DabA32WqacBdf3YFRO-vFfBuNo4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "19340341476-djpocif571bqp1a2u0sq5f0fgntjgoig.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "19340341476-t24o9splld6ck04r61e3l29mjhcl0f7u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterLogin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19340341476:android:a3f60d8b83373a10df3cf1",
+        "android_client_info": {
+          "package_name": "com.example.login_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "19340341476-p35fs40ldk2l65u380bf7kn8idkr79d3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.login_app",
+            "certificate_hash": "2c7ff7575c51cd15cbfd0512ca8a9af482824450"
+          }
+        },
+        {
+          "client_id": "19340341476-djpocif571bqp1a2u0sq5f0fgntjgoig.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC37c7DabA32WqacBdf3YFRO-vFfBuNo4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "19340341476-djpocif571bqp1a2u0sq5f0fgntjgoig.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "19340341476-t24o9splld6ck04r61e3l29mjhcl0f7u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterLogin"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19340341476:android:6fecdf47a4181620df3cf1",
+        "android_client_info": {
+          "package_name": "com.example.meetha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "19340341476-djpocif571bqp1a2u0sq5f0fgntjgoig.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC37c7DabA32WqacBdf3YFRO-vFfBuNo4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "19340341476-djpocif571bqp1a2u0sq5f0fgntjgoig.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "19340341476-t24o9splld6ck04r61e3l29mjhcl0f7u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterLogin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
