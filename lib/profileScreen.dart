@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login/loginScreen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -19,7 +20,18 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed:() {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => loginScreen())
+          ); 
+          },
+          ),
+          
+
         actions: <Widget>[
+
           IconButton(
             icon:Icon(Icons.exit_to_app),
             onPressed:() => leave(context),
@@ -60,13 +72,19 @@ class ProfileScreen extends StatelessWidget {
 
     try {
       // Sign out from Firebase
+      
       await _auth.signOut();
+      // disconnect the account before signing out:
+      // await _googleSignIn.disconnect();
+      //   await FirebaseAuth.instance.signOut();
 
       // Sign out from Google SignIn
       await _googleSignIn.signOut();
+      await FirebaseAuth.instance.signOut();
+      bool log = true;
 
       // Navigate back to the login screen
-      Navigator.pop(context);
+      Navigator.pop(context, log);
     } catch (error) {
       print('Error signing out: $error');
       // Handle the error here
