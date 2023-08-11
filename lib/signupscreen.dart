@@ -15,10 +15,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
 
+
+
   bool _isLoading = false; 
   bool emailTaken = false;// Track loading state
+  bool _reload = false;
 
   @override
+
+  void initState(){
+    super.initState();
+    _emailController.addListener(_emailControllerListener);
+    _emailController.addListener(_emailControllerrefresh);
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Sign Up')),
@@ -101,8 +111,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
                                 Future<void> _handleSignup() async {
+                                  print('process start');
                                 setState(() {
-                                  _isLoading = true; // Start loading
+                                  _isLoading = true;
+                                  emailTaken = false;
+                                  if (_reload = true){
+                                    _emailControllerrefresh();
+                                  }
+                                   // Start loadinge
                                 });
 
                                 if (_formKey.currentState!.validate()) {
@@ -114,17 +130,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     );
                                     // Handle the successful signup, if needed.
                                   } 
-                                  
+                              
                                   on FirebaseAuthException catch (e) {
+                                    
                                       if (e.code == 'weak-password') 
                                           {
                                         print('The password provided is too weak.');
                                           }
                                           else if (e.code == 'email-already-in-use') {
                                         print('The account already exists for that email.');
-                                          setState(() {
-                                          emailTaken = true;
-                                          });
+                                          // setState(() {
+                                          _emailControllerListener();
+                                          // });
                                            }
                                     // Handle other signup errors, if needed.
                                   } 
@@ -132,13 +149,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   catch (e) {
                                     print(e.toString());
                                   }
+                                  finally {
+                                    setState(() {
+                                      _isLoading = false;
+                                      emailTaken = false;
+                                      // dispose(); // Reset the emailTaken flag
+                                    });
+                                  }
                                 }
+                                
                                   setState(() {
                                         _isLoading = false;
+                                        _reload = true;
                                       }                                
                                       );
                                       // Clear text editing controller values
-                                    
+                                    // dispose();
                               }
 
 
@@ -163,5 +189,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
   return null;
 }
+
+void _emailControllerListener(){
+  emailTaken = true;
+}
+void _emailControllerrefresh(){
+  emailTaken = false;
+}
+
+
 
 }
