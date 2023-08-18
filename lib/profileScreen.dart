@@ -40,27 +40,33 @@ class ProfileScreen extends StatelessWidget {
         ],
         
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: NetworkImage(photoUrl),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Name: $displayName',
-              style: TextStyle(fontSize: 20),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Email: $email',
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
+      body: Container(
+  // Set the background image here using DecorationImage if needed
+  child: Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CircleAvatar(
+          radius: 50,
+          backgroundImage: photoUrl.startsWith('http')
+              ? NetworkImage(photoUrl) as ImageProvider<Object> // Cast to ImageProvider<Object>
+              : AssetImage('assets/smiley.png') as ImageProvider<Object>, // Cast to ImageProvider<Object>
         ),
-      ),
+        SizedBox(height: 16),
+        Text(
+          'Name: $displayName',
+          style: TextStyle(fontSize: 20),
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Email: $email',
+          style: TextStyle(fontSize: 16),
+        ),
+      ],
+    ),
+  ),
+),
+
     );
   }
 
@@ -74,11 +80,7 @@ class ProfileScreen extends StatelessWidget {
       // Sign out from Firebase
       
       await _auth.signOut();
-      // disconnect the account before signing out:
-      // await _googleSignIn.disconnect();
-      //   await FirebaseAuth.instance.signOut();
 
-      // Sign out from Google SignIn
       await _googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
       bool log = true;

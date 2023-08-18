@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_login/profileScreen.dart';
 
 
 class SignUpScreen extends StatefulWidget {
@@ -14,19 +16,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _firstnameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
 
 
   bool _isLoading = false; 
-  bool emailTaken = false;// Track loading state
-  bool _reload = false;
+  bool emailTaken = false;
+  bool emailSet = false;
+  String email1 = "";
+  bool emailError = false;
 
   @override
 
   void initState(){
     super.initState();
-    _emailController.addListener(_emailControllerListener);
-    _emailController.addListener(_emailControllerrefresh);
+    
   }
 
   Widget build(BuildContext context) {
@@ -95,6 +99,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   validator: (val) => val!.isEmpty ? 'Enter Last Name' : null,
                   decoration: InputDecoration(labelText: 'Last Name'),
                 ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _phoneController,
+                  validator: (val) {
+                    if (val!.isEmpty) {
+                      return 'Enter your valid contact number';
+                    } else if (!isValidPhoneNumber(val)) {
+                      return 'Enter a valid numeric phone number';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.phone, // Use phone keyboard layout
+                  decoration: InputDecoration(labelText: 'Phone Number'),
+                ),
+                
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _handleSignup, // Disable button when loading
@@ -110,62 +129,127 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-                                Future<void> _handleSignup() async {
-                                  print('process start');
-                                setState(() {
-                                  _isLoading = true;
-                                  emailTaken = false;
-                                  if (_reload = true){
-                                    _emailControllerrefresh();
-                                  }
-                                   // Start loadinge
-                                });
+                  Future<void> _handleSignup() async {
+                      print('process start');
+                      setState(() {
+                        _isLoading = true;
+                        emailTaken = false;
+                      });
 
-                                if (_formKey.currentState!.validate()) {
-                                  try {
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                                 // upload firebase Authenticator credentials
                                     UserCredential userCredential =
                                         await FirebaseAuth.instance.createUserWithEmailAndPassword(
                                       email: _emailController.text,
                                       password: _passwordController.text,
                                     );
-                                    // Handle the successful signup, if needed.
-                                  } 
-                              
-                                  on FirebaseAuthException catch (e) {
-                                    
-                                      if (e.code == 'weak-password') 
-                                          {
-                                        print('The password provided is too weak.');
-                                          }
-                                          else if (e.code == 'email-already-in-use') {
-                                        print('The account already exists for that email.');
-                                          // setState(() {
-                                          _emailControllerListener();
-                                          // });
-                                           }
-                                    // Handle other signup errors, if needed.
-                                  } 
-                                  
-                                  catch (e) {
-                                    print(e.toString());
-                                  }
-                                  finally {
-                                    setState(() {
-                                      _isLoading = false;
-                                      emailTaken = false;
-                                      // dispose(); // Reset the emailTaken flag
+
+                                    print("Credentials accepted");
+
+                                    //create firebase firestore collection with title of profiles
+                                    final CollectionReference _profiles =
+                                        FirebaseFirestore.instance.collection('Profiles');
+
+                                    final String email = _emailController.text;
+                                    final String password = _passwordController.text;
+                                    final String firstName = _firstnameController.text;
+                                    final String lastName = _lastnameController.text;
+                                    final String phoneNumber = _phoneController.text;
+
+                                    // add credentials to that collection database created above in firestore
+                                    await _profiles.add({
+                                      "email": email,
+                                      "password": password,
+                                      "First Name": firstName,
+                                      "Last Name": lastName,
+                                      "phone Number": phoneNumber,
+                                      "timestamp": FieldValue.serverTimestamp(),
                                     });
-                                  }
-                                }
-                                
+
+                        
+
+                            
+                            // Query the documents in the collection and order by creation time in descending order
+                              QuerySnapshot querySnapshot = await _profiles.orderBy('timestamp', descending: true).limit(1).get();
+
+                              // Check if there are any documents in the query result
+                              if (querySnapshot.docs.isNotEmpty) {
+                                // Access the data of the first document (most recent)
+                                String email1 = querySnapshot.docs.first['email'];
+
+                                // Now you can use this data as needed
+                                print('Most recent email: $email1');
+
+                                //if email retreived set bool to transger credentials to profile page
+                                if (email == email1 ) {
                                   setState(() {
-                                        _isLoading = false;
-                                        _reload = true;
-                                      }                                
-                                      );
-                                      // Clear text editing controller values
-                                    // dispose();
+                                    emailSet = true;
+                                  });
+                                }
+                              } else {
+                                // Handle the case where no documents were found
+                                print('No documents found.');
                               }
+                          } 
+                          
+                          // Handle the successful signup, if needed.
+                        on FirebaseAuthException catch (e) {
+                          if (e.code == 'weak-password') {
+                            print('The password provided is too weak.');
+                          } else if (e.code == 'email-already-in-use') {
+                            print('The account already exists for that email.');
+                            setState(() {
+                              emailError = true;
+                            });
+
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Error'),
+                                content: Text('An account is already assigned to this email.'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); // Close the dialog
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          // Handle other signup errors, if needed.
+                        } catch (e) {
+                          print(e.toString());
+                        } finally {
+                          setState(() {
+                            _isLoading = false;
+                            emailTaken = false;
+                          });
+                        }
+                      }
+
+                      setState(() {
+                        _isLoading = false;
+                      });
+
+                      // stuck here
+                      print("emailSet: $emailSet");
+                      print("emailError: $emailError");
+                      if (emailSet 
+                      && !emailError
+                      ){
+                         Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                         ProfileScreen(
+                          displayName: _firstnameController.text,
+                          email: _emailController.text, 
+                          photoUrl: "assets/smiley.png")));
+                      }
+
+                      // Clear text editing controller values
+                      // dispose();
+                    }
 
 
   bool isValidEmail(String email) {
@@ -190,11 +274,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   return null;
 }
 
-void _emailControllerListener(){
-  emailTaken = true;
-}
-void _emailControllerrefresh(){
-  emailTaken = false;
+bool isValidPhoneNumber(String phoneNumber) {
+  // Use a regular expression to check if the phone number is numeric
+  final phoneRegExp = RegExp(r'^[0-9]+$');
+  return phoneRegExp.hasMatch(phoneNumber);
 }
 
 

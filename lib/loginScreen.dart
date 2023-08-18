@@ -79,6 +79,7 @@ class loginScreen extends StatelessWidget {
         );
         print('$log');
       }
+
     } catch (error, stackTrace) {
       print('Error signing in with Google: $error');
       print(stackTrace);
