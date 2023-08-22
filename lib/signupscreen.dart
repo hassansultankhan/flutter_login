@@ -55,6 +55,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           controller: _emailController,
                           validator: (val) => emailValidator(val, emailTaken),
                           decoration: InputDecoration(labelText: 'Email'),
+                          onChanged: (val) {
+                              // Trigger revalidation when the value changes
+                              // _formKey.currentState!.validate();
+                              setState(() {
+                                emailError = false;
+                              });
+                            },
                         ),
 
 
@@ -241,7 +248,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       && !emailError
                       ){
                          Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                         ProfileScreen(
+                         ProfileScreen( 
                           displayName: _firstnameController.text,
                           email: _emailController.text, 
                           photoUrl: "assets/smiley.png")));
