@@ -103,13 +103,13 @@ class loginScreen extends StatelessWidget {
             
           children: [
             ListTile(
-              leading: Icon(Icons.login),
-              title: Text('Sign In'),
-              onTap: () {
-                Navigator.pop(context); // Close the bottom sheet
-                // Implement the sign-in functionality here
-                // (e.g., show a dialog to enter email and password)
-              },
+            leading: Icon(Icons.login),
+            title: Text('Sign In'),
+            onTap: () {
+              Navigator.pop(context); // Close the bottom sheet
+              // Show the sign-in AlertDialog
+              showSignInDialog(context);
+            },
             ),
             ListTile(
               leading: Icon(Icons.person_add),
@@ -129,16 +129,144 @@ class loginScreen extends StatelessWidget {
                                 // const SizedBox(height: 150,)
                         ]
                     );
-        }
-    );
+                      }
+                  );
 
-  }
-  // Widget buildProfileScreen() {
-  //   return ProfileScreen(
-  //     displayName: 'John Doe',
-  //     email: 'john.doe@example.com',
-  //     photoUrl: 'https://example.com/profile.jpg',
-  //   );
-  // }
+                }
+
+  void showSignInDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      TextEditingController emailController = TextEditingController();
+      TextEditingController passwordController = TextEditingController();
+      bool isLoading = false;
+      String errorText = '';
+
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Sign In'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(labelText: 'Email'),
+                ),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(labelText: 'Password'),
+                  obscureText: true,
+                ),
+                SizedBox(height: 10),
+                isLoading
+                    ? CircularProgressIndicator()
+                    : GestureDetector(
+                        onTap: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+
+                          String email = emailController.text;
+                          String password = passwordController.text;
+
+                          try {
+                            UserCredential userCredential =
+                                await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                              email: email,
+                              password: password,
+                            );
+
+                            // Successfully signed in
+                            User? user = userCredential.user;
+                            if (user != null) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfileScreen(
+                                    displayName: user.displayName ?? '',
+                                    email: user.email ?? '',
+                                    photoUrl: user.photoURL ?? '',
+                                  ),
+                                ),
+                              );
+                            }
+                          } catch (error) {
+                            setState(() {
+                              isLoading = false;
+                              if (error is FirebaseAuthException) {
+                                if (error.code == 'user-not-found') {
+                                  errorText =
+                                      'There is no account against this email.';
+                                } else if (error.code == 'wrong-password') {
+                                  errorText = 'Wrong password.';
+                                } else {
+                                  errorText = 'An error occurred. Please try again.';
+                                }
+                              }
+                            });
+                          }
+                        },
+                        child: Text(
+                          'Sign In',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                SizedBox(height: 10),
+                // Inside the StatefulBuilder's builder function                 
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      errorText,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  GestureDetector(
+                    // ... (rest of the code remains the same)
+                  ),
+
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context); // Close the sign-in dialog
+                    // Implement password recovery logic
+                  },
+                  child: Text(
+                    'Forgot your password?',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the sign-in dialog
+                },
+                child: Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
+
+
 
 }
