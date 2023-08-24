@@ -4,7 +4,21 @@ import 'package:flutter_login/signupscreen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_login/profileScreen.dart';
 
-class loginScreen extends StatelessWidget {
+class loginScreen extends StatefulWidget {
+  const loginScreen({super.key});
+
+  @override
+  State<loginScreen> createState() => _loginScreenState();
+}
+
+class _loginScreenState extends State<loginScreen> {
+  // @override
+//   Widget build(BuildContext context) {
+//     return const Placeholder();
+//   }
+// }
+
+// class loginScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   bool log = false;
