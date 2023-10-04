@@ -9,6 +9,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  // GlobalKey associated with a FormState. A FormState is used to interact with and manage the state of a Form widget, which is commonly used to collect and validate user input.
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -138,6 +139,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       emailTaken = false;
     });
 
+    // validate the user's input in the form fields associated with the Form represented by _formKey.currentState. If the validation is successful (i.e., all form fields are valid), the code inside the if block will be executed.
     if (_formKey.currentState!.validate()) {
       try {
         // upload firebase Authenticator credentials

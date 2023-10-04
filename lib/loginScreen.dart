@@ -19,6 +19,8 @@ class _loginScreenState extends State<loginScreen> {
 // }
 
 // class loginScreen extends StatelessWidget {
+
+  //Entry point of firebase SDK (software development kit)
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   bool log = false;
@@ -53,20 +55,28 @@ class _loginScreenState extends State<loginScreen> {
   Future<void> _handleGoogleSignIn(BuildContext context) async {
     try {
       print(log);
-      // Sign out from Google Sign-In (clear previous credentials)
+      // Sign out from Google Sign-In (clear previous credentials) by using the log value of true that is achieved from profileScreen with leave() function
       if (log == true) {
         print('signing out');
         await _googleSignIn.signOut();
       }
 
+      //Hold fields describing a signed in user's identity, provided as input
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      //Below code generates signin token from google for the provided input by user
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
+
+      //this will create credentials from the google after the generation of signin token
       final AuthCredential credential = GoogleAuthProvider.credential(
+        //accessToken is used as Google APIs (application programming interface) for accessing other google platforms like google drive etc.
         accessToken: googleAuth.accessToken,
+        //idToken holds user related information. used ass id pass.
         idToken: googleAuth.idToken,
       );
 
+      // this will return values of users from google and passed onto user variable
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
@@ -112,7 +122,7 @@ class _loginScreenState extends State<loginScreen> {
                 Navigator.pop(context); // Close the bottom sheet
                 // Show the sign-in AlertDialog
                 showSignInDialog(context);
-                print("object");
+                print("Signin screen displayed");
               },
             ),
             ListTile(
